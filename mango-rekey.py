@@ -71,18 +71,37 @@ def update_publisher_keys(publisher):
   """
   private_key, public_key = generate_rsa_keypair()
 
-  # Serialize the private key to PEM format (PKCS#8)
-  publisher["rsaPrivateKey"] = private_key.private_bytes(
+  # # Serialize the private key to PEM format (PKCS#8)
+  # publisher["rsaPrivateKey"] = private_key.private_bytes(
+  #     encoding=serialization.Encoding.PEM,
+  #     format=serialization.PrivateFormat.PKCS8,
+  #     encryption_algorithm=serialization.NoEncryption()
+  # ).decode("utf-8")
+
+  # # Serialize the public key to PEM format (SubjectPublicKeyInfo)
+  # publisher["rsaPublicKey"] = public_key.public_bytes(
+  #     encoding=serialization.Encoding.PEM,
+  #     format=serialization.PublicFormat.SubjectPublicKeyInfo
+  # ).decode("utf-8")
+  
+  # Serialize the keys to PEM format
+  private_key_pem = private_key.private_bytes(
       encoding=serialization.Encoding.PEM,
       format=serialization.PrivateFormat.PKCS8,
       encryption_algorithm=serialization.NoEncryption()
   ).decode("utf-8")
-
-  # Serialize the public key to PEM format (SubjectPublicKeyInfo)
-  publisher["rsaPublicKey"] = public_key.public_bytes(
+  public_key_pem = public_key.public_bytes(
       encoding=serialization.Encoding.PEM,
       format=serialization.PublicFormat.SubjectPublicKeyInfo
   ).decode("utf-8")
+
+  # Update the publisher with new keys and renamed fields
+  publisher["privateKey"] = private_key_pem  # Renamed from rsaPrivateKey
+  publisher["publicKey"] = public_key_pem  # Renamed from rsaPublicKey
+
+  # Remove the old key fields
+  del publisher["rsaPrivateKey"]
+  del publisher["rsaPublicKey"]
 
   # Save the keys to files
   save_keypair(private_key, public_key, publisher["name"])
