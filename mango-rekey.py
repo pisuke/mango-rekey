@@ -10,8 +10,8 @@ from cryptography.hazmat.primitives import serialization
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string("i", None, "Input JSON file to modify.")
-flags.DEFINE_string("o", None, "Output JSON file to write the changes.")
+flags.DEFINE_string("i", None, "Input Mango JSON file to modify.")
+flags.DEFINE_string("o", None, "Output Mango JSON file to write the changes.")
 flags.mark_flag_as_required("i")
 flags.mark_flag_as_required("o")
 
@@ -64,26 +64,13 @@ def save_keypair(private_key, public_key, device_name):
     ))
 
 def update_publisher_keys(publisher):
-  """Updates the RSA keys for a publisher.
+  """Updates the RSA keys for a Mango publisher.
 
   Args:
-      publisher: A dictionary representing a publisher.
+      publisher: A dictionary representing a Mango publisher.
   """
   private_key, public_key = generate_rsa_keypair()
 
-  # # Serialize the private key to PEM format (PKCS#8)
-  # publisher["rsaPrivateKey"] = private_key.private_bytes(
-  #     encoding=serialization.Encoding.PEM,
-  #     format=serialization.PrivateFormat.PKCS8,
-  #     encryption_algorithm=serialization.NoEncryption()
-  # ).decode("utf-8")
-
-  # # Serialize the public key to PEM format (SubjectPublicKeyInfo)
-  # publisher["rsaPublicKey"] = public_key.public_bytes(
-  #     encoding=serialization.Encoding.PEM,
-  #     format=serialization.PublicFormat.SubjectPublicKeyInfo
-  # ).decode("utf-8")
-  
   # Serialize the keys to PEM format
   private_key_pem = private_key.private_bytes(
       encoding=serialization.Encoding.PEM,
@@ -131,34 +118,3 @@ def main(argv):
 
 if __name__ == "__main__":
   app.run(main)
-
-
-# from cryptography.hazmat.primitives.asymmetric import rsa
-# from cryptography.hazmat.primitives import serialization
-
-# def generate_rsa_key(key_size=2048, filename="rsa_private.pem"):
-#     """Generates an RSA private key and saves it to a PEM file.
-
-#     Args:
-#         key_size: The size of the RSA key in bits (default: 2048).
-#         filename: The name of the file to save the key to (default: "rsa_private.pem").
-#     """
-#     private_key = rsa.generate_private_key(
-#         public_exponent=65537,  # Commonly used public exponent
-#         key_size=key_size
-#     )
-
-#     pem = private_key.private_bytes(
-#         encoding=serialization.Encoding.PEM,
-#         format=serialization.PrivateFormat.PKCS8,  # Recommended format
-#         encryption_algorithm=serialization.NoEncryption()  # No password
-#     )
-
-#     with open(filename, "wb") as f:
-#         f.write(pem)
-
-#     print(f"RSA private key saved to {filename}")
-
-
-# if __name__ == "__main__":
-#     generate_rsa_key()  # Or generate_rsa_key(4096, "my_key.pem") for a 4096-bit key
